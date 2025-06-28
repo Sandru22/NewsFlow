@@ -12,7 +12,7 @@ namespace NewsFlow.Services
 
         static AppConfig()
         {
-            //Link API
+            ApiBaseUrl = "https://api.newsflowapi.uk/api";
         }
     }
 }

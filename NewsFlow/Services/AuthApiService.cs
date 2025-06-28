@@ -31,7 +31,16 @@ public class AuthApiService
         var content = new StringContent(JsonSerializer.Serialize(new { UserName = username, Email = email, FullName = username, Password = password }),
             Encoding.UTF8, "application/json");
         var response = await _httpClient.PostAsync("auth/register", content);
-        return response.IsSuccessStatusCode;
+        if (response.IsSuccessStatusCode)
+            return true;
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var errors = JsonSerializer.Deserialize<List<IdentityError>>(responseContent, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        var message = string.Join("\n", errors?.Select(e => e.Description) ?? new[] { "Eroare necunoscută" });
+        await Application.Current.MainPage.DisplayAlert("Eroare", message, "OK");
+
+        return false;
     }
 
 
